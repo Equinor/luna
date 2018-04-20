@@ -61,6 +61,7 @@ def generate_summary(state):
         for var in var_list:
             key = var.getKey1()
             t_step[key] = flow(state, idx, key)
+            break
 
         log(state, t_step)
 

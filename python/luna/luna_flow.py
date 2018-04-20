@@ -56,6 +56,7 @@ def completions(state, step_idx):
 
 def flow(state, step_idx, key):
     """Takes a schedule and a step_idx and returns FOPR/FOPT for that step"""
+    print(step_idx)
     now = state.schedule.timesteps[step_idx]
     try:
         nxt = state.schedule.timesteps[step_idx + 1]
