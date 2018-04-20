@@ -21,11 +21,11 @@ def accumulate(state, x,y,z, collect=1.0):
     if collect < 0.1:
         return 0
 
-    props = state.state.props
+    props = state.state.props()
 
-    gidx = state.grid.getGlobalIndex(x, y, z)
+    gidx = state.grid.globalIndex(x, y, z)
 
-    permx = lundarcy(props['PERMX'][gidx])
+    permx = lunadarcy(props['PERMX'][gidx])
 
     oip = _soil(state.state.table, x, y, z) * props['PORV'][gidx]
 
@@ -66,8 +66,8 @@ def flow(state, step_idx, key):
     #mockedval = len(pros)**2 * len(injs) * days  # yup
 
     log(state, 'idx {} pros {} injs {} -> {}'.format(step_idx,
-                                                     pros,
-                                                     injs,
+                                                     pcomp,
+                                                     icomp,
                                                      oip))
 
     return oip
