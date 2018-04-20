@@ -1,6 +1,6 @@
 from ecl.summary import EclSumVarType, EclSum
 
-from luna_util import log
+from .luna_util import log
 
 
 def lunadarcy(perm):

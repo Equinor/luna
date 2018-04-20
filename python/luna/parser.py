@@ -1,5 +1,5 @@
 import sunbeam
-from luna_util import lunastate
+from .luna_util import lunastate
 
 SUNBEAM_ERRORS = ('PARSE_UNKNOWN_KEYWORD', 'PARSE_RANDOM_TEXT',
                   'PARSE_RANDOM_SLASH', 'PARSE_MISSING_DIMS_KEYWORD',

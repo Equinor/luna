@@ -19,9 +19,7 @@
 from __future__ import (division, print_function)
 import os.path
 
-from summary import generate_summary
-from parser import parse
-from luna_util import log
+from luna import generate_summary, parse, log
 
 
 def main(eclbase):

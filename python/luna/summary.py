@@ -1,7 +1,7 @@
 from ecl.summary import EclSumVarType, EclSum
 
-from luna_flow import flow
-from luna_util import log
+from .luna_flow import flow
+from .luna_util import log
 
 
 # TODO
