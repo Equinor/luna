@@ -2,12 +2,6 @@ from ecl.summary import EclSumVarType, EclSum
 
 from luna_util import log
 
-# TODO
-#
-# Perhaps we only need F[OGW]P[RT] and should _fix_ the output to those
-#
-# Need to get wells, their type (injection/production) as well as report dates.
-
 def flow(state, step_idx, key):
     """Takes a schedule and a step_idx and returns FOPR/FOPT for that step"""
     now = state.schedule.timesteps[step_idx]
