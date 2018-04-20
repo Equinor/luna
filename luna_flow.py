@@ -16,7 +16,7 @@ def lunadarcy(perm):
 def _soil(table, x,y,z):
     return 1 - table['SWOF']('SW', 0.0)
 
-def accumulate(state, x,y,z, collect=1.0, n=10):
+def accumulate(state, x,y,z, collect=1.0, n=3):
     """Recursively collect oil"""
     if collect < 0.1 or n <= 0:
         return 0.
@@ -44,9 +44,6 @@ def accumulate(state, x,y,z, collect=1.0, n=10):
 
     return oip
 
-def props():
-    pass
-
 def completions(state, step_idx):
     wls = [w for w in state.schedule.wells if w.status(step_idx) == u'OPEN']
     pros = [w for w in wls if w.isproducer(step_idx)]
@@ -70,7 +67,8 @@ def flow(state, step_idx, key):
 
     oip = 0
     for well in pcomp:
-        for comp in well:
+        if well:
+            comp = well[0]
             oip += accumulate(state, *comp.pos)
 
     oip *= days
