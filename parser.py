@@ -49,5 +49,6 @@ def parse(eclbase):
     state = lunastate(eclbase=eclbase,
                       schedule=sch,
                       grid=grid,
-                      keys=[k for k in _KEYS if k in es.summary_config])
+                      keys=[k for k in _KEYS if k in es.summary_config],
+                      state=es.state)
     return state

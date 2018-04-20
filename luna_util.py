@@ -4,7 +4,7 @@ from datetime import datetime as dt
 from collections import namedtuple
 
 lunastate = namedtuple('lunastate',
-                       'eclbase schedule grid keys')
+                       'eclbase schedule grid keys state')
 
 def log(state, msg):
     out = '{}\t{}\n'.format(dt.now(), msg)
