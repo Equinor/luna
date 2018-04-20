@@ -63,11 +63,14 @@ def flow(state, step_idx, key):
         for comp in well:
             oip += accumulate(state, *comp.pos)
 
+    oip *= days
+
     #mockedval = len(pros)**2 * len(injs) * days  # yup
 
-    log(state, 'idx {} pros {} injs {} -> {}'.format(step_idx,
-                                                     pcomp,
-                                                     icomp,
-                                                     oip))
+    log(state, 'idx {} ({} days) pros {} injs {} -> {}'.format(step_idx,
+                                                               days,
+                                                               pcomp,
+                                                               icomp,
+                                                               oip))
 
     return oip
