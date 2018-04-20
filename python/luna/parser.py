@@ -1,5 +1,6 @@
+import numpy as np
 import sunbeam
-from .luna_util import lunastate
+from .luna_util import lunastate, lunadarcy
 
 SUNBEAM_ERRORS = ('PARSE_UNKNOWN_KEYWORD', 'PARSE_RANDOM_TEXT',
                   'PARSE_RANDOM_SLASH', 'PARSE_MISSING_DIMS_KEYWORD',
@@ -46,9 +47,24 @@ def parse(eclbase):
     sch = es.schedule
     grid = es.state.grid()
 
+    props = es.state.props()
+    nglob = grid.getNX() * grid.getNY() * grid.getNZ()
+    print('compute %d permx ...' % nglob)
+    px = props['PERMX']
+    permx = np.array([lunadarcy(px[i]) for i in range(nglob)])
+
+    print('compute %d permy ...' % nglob)
+    py = props['PERMY']
+    permy = np.array([lunadarcy(py[i]) for i in range(nglob)])
+
+    print('compute %d permz ...' % nglob)
+    pz = props['PERMZ']
+    permz = np.array([lunadarcy(pz[i]) for i in range(nglob)])
+
     state = lunastate(eclbase=eclbase,
                       schedule=sch,
                       grid=grid,
                       keys=[k for k in _KEYS if k in es.summary_config],
-                      state=es.state)
+                      state=es.state,
+                      perm=(permx, permy, permz))
     return state
