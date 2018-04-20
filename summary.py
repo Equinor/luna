@@ -1,6 +1,5 @@
 from ecl.summary import EclSumVarType, EclSum
 
-from parser import KEYS
 from luna_flow import flow
 from luna_util import log
 
@@ -44,7 +43,7 @@ def generate_summary(state):
 
     ecl_sum = EclSum.restart_writer(state.eclbase, None, -1, sim_start, x, y, z)
 
-    var_list = _extract_var_list(KEYS, ecl_sum)
+    var_list = _extract_var_list(state.keys, ecl_sum)
 
     msg = 'start={}\nend={}\ntimesteps={}'.format(state.schedule.start,
                                                   state.schedule.end,

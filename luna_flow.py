@@ -1,6 +1,5 @@
 from ecl.summary import EclSumVarType, EclSum
 
-from parser import KEYS
 from luna_util import log
 
 # TODO

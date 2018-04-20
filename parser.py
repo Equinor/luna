@@ -1,9 +1,5 @@
 import sunbeam
-from collections import namedtuple
-
-lunastate = namedtuple('lunastate',
-                       'eclbase schedule grid')
-
+from luna_util import lunastate
 
 SUNBEAM_ERRORS = ('PARSE_UNKNOWN_KEYWORD', 'PARSE_RANDOM_TEXT',
                   'PARSE_RANDOM_SLASH', 'PARSE_MISSING_DIMS_KEYWORD',
@@ -15,7 +11,7 @@ SUNBEAM_ERRORS = ('PARSE_UNKNOWN_KEYWORD', 'PARSE_RANDOM_TEXT',
                   'SUMMARY_UNKNOWN_WELL', 'SUMMARY_UNKNOWN_GROUP')
 SUNBEAM_ACTION = sunbeam.action.warn
 
-KEYS = ('FOPR',
+_KEYS = ('FOPR',
         'FGPR',
         'FWPR',
         'FLPR',
@@ -52,5 +48,6 @@ def parse(eclbase):
 
     state = lunastate(eclbase=eclbase,
                       schedule=sch,
-                      grid=grid)
+                      grid=grid,
+                      keys=[k for k in _KEYS if k in es.summary_config])
     return state
