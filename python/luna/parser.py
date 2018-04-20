@@ -40,6 +40,13 @@ _KEYS = ('FOPR',
         'FPR',
 )  # TODO read from SCHEDULE
 
+def _days(schedule, step_idx):
+    now = schedule.timesteps[step_idx]
+    try:
+        nxt = schedule.timesteps[step_idx + 1]
+    except IndexError:
+        nxt = schedule.end
+    return (nxt - now).days
 
 def completions(schedule, step_idx):
     wls = [w for w in schedule.wells if w.status(step_idx) == u'OPEN']
@@ -55,6 +62,7 @@ def _soil(table, x, y, z):
     return 1 - table['SWOF']('SW', 0.0)
 
 def parse(eclbase):
+    print('parsing ...')
     es = sunbeam.parse(eclbase + '.DATA',
                        [(err, SUNBEAM_ACTION) for err in SUNBEAM_ERRORS])
     sch = es.schedule
@@ -78,6 +86,8 @@ def parse(eclbase):
     prv = props['PORV']
     porv = np.array([prv[i] for i in range(nglob)])
 
+    print('compute days ...')
+    days = np.array([_days(sch, i) for i in range(len(sch.timesteps))])
 
     nx, ny, nz = grid.getNX(), grid.getNY(), grid.getNZ()
 
@@ -93,6 +103,7 @@ def parse(eclbase):
 
     state = lunastate(eclbase=eclbase,
                       schedule=sch,
+                      days=days,
                       completions=comps,
                       grid=grid,
                       keys=[k for k in _KEYS if k in es.summary_config],
@@ -105,4 +116,5 @@ def parse(eclbase):
                       ny=ny,
                       nz=nz,
     )
+    print('done parsing')
     return state
