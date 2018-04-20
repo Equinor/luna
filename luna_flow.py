@@ -16,21 +16,31 @@ def lunadarcy(perm):
 def _soil(table, x,y,z):
     return 1 - table['SWOF']('SW', 0.0)
 
-def accumulate(state, x,y,z, collect=1.0):
+def accumulate(state, x,y,z, collect=1.0, n=10):
     """Recursively collect oil"""
-    if collect < 0.1:
-        return 0
+    if collect < 0.1 or n <= 0:
+        return 0.
+    if min(x,y,z) < 0:
+        return 0.
 
     props = state.state.props()
 
     gidx = state.grid.globalIndex(x, y, z)
 
     permx = lunadarcy(props['PERMX'][gidx])
+    permy = lunadarcy(props['PERMY'][gidx])
+    permz = lunadarcy(props['PERMZ'][gidx])
 
     oip = _soil(state.state.table, x, y, z) * props['PORV'][gidx]
 
-    oip += accumulate(state, x+1, y, z, collect=collect*permx)
-    oip += accumulate(state, x-1, y, z, collect=collect*permx)
+    oip += accumulate(state, x+1, y, z, collect=collect*permx, n=n-1)
+    oip += accumulate(state, x-1, y, z, collect=collect*permx, n=n-1)
+
+    oip += accumulate(state, x, y+1, z, collect=collect*permy, n=n-1)
+    oip += accumulate(state, x, y-1, z, collect=collect*permy, n=n-1)
+
+    oip += accumulate(state, x, y, z+1, collect=collect*permz, n=n-1)
+    oip += accumulate(state, x, y, z-1, collect=collect*permz, n=n-1)
 
     return oip
 
