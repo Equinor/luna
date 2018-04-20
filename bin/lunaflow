@@ -39,4 +39,6 @@ if __name__ == '__main__':
     if not os.path.exists(eclbase + '.DATA'):
         exit('No such file {} (.DATA)'.format(eclbase))
 
+    #import cProfile
+    #cProfile.run('main(eclbase=eclbase, )')
     main(eclbase=eclbase, )

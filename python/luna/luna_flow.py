@@ -5,19 +5,13 @@ from .luna_util import log
 RESERVOIR = {}
 
 
-
-
-def _soil(table, x, y, z):
-    return 1 - table['SWOF']('SW', 0.0)
-
-
 def accumulate(state, x, y, z, collect=1.0, n=3, visited=None):
     """Recursively collect oil"""
     if collect < 0.1 or n <= 0:
         return 0.
-    if min(x, y, z) < 0 or x >= state.grid.getNX() or y >= state.grid.getNY() or z >= state.grid.getNZ():
+    if min(x, y, z) < 0 or x >= state.nx or y >= state.ny or z >= state.nz:
         return 0.
-    gidx = state.grid.globalIndex(x, y, z)
+    gidx = state.gidx[(x, y, z)]
     if gidx in RESERVOIR:
         return RESERVOIR[gidx]
 
@@ -29,9 +23,8 @@ def accumulate(state, x, y, z, collect=1.0, n=3, visited=None):
 
     visited.add(gidx)
 
-    props = state.state.props()
-
-    oip = _soil(state.state.table, x, y, z) * props['PORV'][gidx]
+    #print('computing %d' % gidx)
+    oip = state.soil[(x, y, z)] * state.porv[gidx]
 
     oip += accumulate(
         state, x + 1, y, z, collect=collect * state.perm[0][gidx], n=n-1, visited=visited)
@@ -52,19 +45,11 @@ def accumulate(state, x, y, z, collect=1.0, n=3, visited=None):
     return oip
 
 
-def completions(state, step_idx):
-    wls = [w for w in state.schedule.wells if w.status(step_idx) == u'OPEN']
-    pros = [w for w in wls if w.isproducer(step_idx)]
-    injs = [w for w in wls if w.isinjector(step_idx)]
-
-    pcomp = [w.completions(step_idx) for w in pros]
-    icomp = [w.completions(step_idx) for w in injs]
-    return pcomp, icomp
 
 
 def flow(state, step_idx, key):
     """Takes a schedule and a step_idx and returns FOPR/FOPT for that step"""
-    print(step_idx)
+    #print(step_idx)
     now = state.schedule.timesteps[step_idx]
     try:
         nxt = state.schedule.timesteps[step_idx + 1]
@@ -72,12 +57,12 @@ def flow(state, step_idx, key):
         nxt = state.schedule.end
     days = (nxt - now).days
 
-    pcomp, icomp = completions(state, step_idx)
+    pcomp, icomp = state.completions[step_idx]
 
     oip = 0
     for well in pcomp:
         for comp in well:
-            oip += accumulate(state, *comp.pos)
+            oip += accumulate(state, *comp)
 
     oip *= days
 

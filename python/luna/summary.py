@@ -37,6 +37,7 @@ def _extract_var_list(keys, smry):
 
 
 
+
 def generate_summary(state):
     sim_start = state.schedule.start
     x, y, z = state.grid.getNX(), state.grid.getNY(), state.grid.getNZ()

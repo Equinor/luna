@@ -41,6 +41,19 @@ _KEYS = ('FOPR',
 )  # TODO read from SCHEDULE
 
 
+def completions(schedule, step_idx):
+    wls = [w for w in schedule.wells if w.status(step_idx) == u'OPEN']
+    pros = [w for w in wls if w.isproducer(step_idx)]
+    injs = [w for w in wls if w.isinjector(step_idx)]
+
+    pcomp = [[c.pos for c in w.completions(step_idx)] for w in pros]
+    icomp = [[c.pos for c in w.completions(step_idx)] for w in injs]
+    return pcomp, icomp
+
+
+def _soil(table, x, y, z):
+    return 1 - table['SWOF']('SW', 0.0)
+
 def parse(eclbase):
     es = sunbeam.parse(eclbase + '.DATA',
                        [(err, SUNBEAM_ACTION) for err in SUNBEAM_ERRORS])
@@ -61,10 +74,35 @@ def parse(eclbase):
     pz = props['PERMZ']
     permz = np.array([lunadarcy(pz[i]) for i in range(nglob)])
 
+    print('compute %d porv ...' % nglob)
+    prv = props['PORV']
+    porv = np.array([prv[i] for i in range(nglob)])
+
+
+    nx, ny, nz = grid.getNX(), grid.getNY(), grid.getNZ()
+
+    gidx = {}
+    soil = {}
+    for i in range(nx):
+        for j in range(ny):
+            for k in range(nz):
+                gidx[(i, j, k)] = grid.globalIndex(i, j, k)
+                soil[(i, j, k)] = _soil(es.state.table, i, j, k)
+
+    comps = [completions(sch, i) for i in range(len(sch.timesteps))]
+
     state = lunastate(eclbase=eclbase,
                       schedule=sch,
+                      completions=comps,
                       grid=grid,
                       keys=[k for k in _KEYS if k in es.summary_config],
                       state=es.state,
-                      perm=(permx, permy, permz))
+                      soil=soil,
+                      porv=porv,
+                      perm=(permx, permy, permz),
+                      gidx=gidx,
+                      nx=nx,
+                      ny=ny,
+                      nz=nz,
+    )
     return state

@@ -4,7 +4,7 @@ from collections import namedtuple
 
 
 lunastate = namedtuple('lunastate',
-                       'eclbase schedule grid keys state perm')
+                       'eclbase schedule completions grid keys state soil porv perm gidx nx ny nz')
 
 
 def lunadarcy(perm):
